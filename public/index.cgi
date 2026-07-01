@@ -2,9 +2,7 @@
 use strict;
 use warnings;
 use utf8;
-use feature qw(say);
 use Encode ();
-use IO::Socket::INET;
 
 sub html_escape {
     my ($value) = @_;
@@ -23,13 +21,13 @@ sub render_home {
         {label => 'Scripts', value => '3', note => 'Ready to run'},
         {label => 'Tests', value => '2', note => 'Passing target'},
         {label => 'Examples', value => '4', note => 'Perl basics'},
-        {label => 'Web App', value => '1', note => 'Plain Perl'},
+        {label => 'Web App', value => '1', note => 'CGI'},
     );
 
     my @tasks = (
         {name => 'hello.pl を実行する', state => '完了', time => 'Step 1'},
         {name => 'テストを追加する', state => '準備中', time => 'Step 2'},
-        {name => 'Webページを育てる', state => '次にやる', time => 'Step 3'},
+        {name => 'CGIページを育てる', state => '次にやる', time => 'Step 3'},
     );
 
     my $stat_cards = join "\n", map {
@@ -232,7 +230,7 @@ HTML
 <body>
   <header>
     <h1>Training Perl Home</h1>
-    <p class="subhead">Perl練習環境のホーム画面</p>
+    <p class="subhead">Perl練習環境のCGIホーム画面</p>
   </header>
 
   <main>
@@ -271,50 +269,11 @@ $task_rows
 HTML
 }
 
-sub response {
-    my ($status, $content_type, $body) = @_;
-
-    my $length = length Encode::encode('UTF-8', $body);
-
-    return join "\r\n",
-        "HTTP/1.1 $status",
-        "Content-Type: $content_type; charset=utf-8",
-        "Content-Length: $length",
-        "Connection: close",
-        "",
-        $body;
+sub main {
+    print "Content-Type: text/html; charset=utf-8\n\n";
+    print Encode::encode('UTF-8', render_home());
 }
 
-sub run_server {
-    my ($host, $port) = @_;
-
-    my $server = IO::Socket::INET->new(
-        LocalAddr => $host,
-        LocalPort => $port,
-        Proto     => 'tcp',
-        Listen    => 10,
-        ReuseAddr => 1,
-    ) or die "Cannot start server on $host:$port: $!";
-
-    say "Web application available at http://$host:$port";
-
-    while (my $client = $server->accept) {
-        my $request = <$client> // '';
-        my ($method, $path) = split /\s+/, $request;
-
-        my $line;
-        while (defined($line = <$client>) && $line ne "\r\n") {
-        }
-
-        my $body = $method && $method eq 'GET' && $path && $path eq '/'
-            ? response('200 OK', 'text/html', render_home())
-            : response('404 Not Found', 'text/plain', "Not Found\n");
-
-        print {$client} Encode::encode('UTF-8', $body);
-        close $client;
-    }
-}
-
-run_server('0.0.0.0', 3000) unless caller;
+main() unless caller;
 
 1;

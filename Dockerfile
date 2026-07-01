@@ -6,6 +6,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         build-essential \
         ca-certificates \
+        apache2 \
         curl \
         git \
         locales \
@@ -20,6 +21,9 @@ ENV LC_ALL=en_US.UTF-8
 RUN cpanm --notest Perl::LanguageServer \
     && rm -rf /root/.cpanm
 
+COPY docker/apache-training-perl.conf /etc/apache2/sites-available/000-default.conf
+RUN a2enmod cgid
+
 WORKDIR /workspace
 
-CMD ["perl", "app.pl"]
+CMD ["apachectl", "-D", "FOREGROUND"]
