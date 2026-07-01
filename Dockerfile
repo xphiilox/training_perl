@@ -17,9 +17,9 @@ RUN apt-get update \
 ENV LANG=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
 
-RUN cpanm --notest Perl::LanguageServer Mojolicious \
+RUN cpanm --notest Perl::LanguageServer \
     && rm -rf /root/.cpanm
 
 WORKDIR /workspace
 
-CMD ["morbo", "-l", "http://0.0.0.0:3000", "app.pl"]
+CMD ["perl", "app.pl"]

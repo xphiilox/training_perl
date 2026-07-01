@@ -7,4 +7,4 @@ services:
       - .:/workspace
     ports:
       - "3000:3000"
-    command: morbo -l http://0.0.0.0:3000 app.pl
+    command: perl app.pl

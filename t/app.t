@@ -2,15 +2,14 @@ use strict;
 use warnings;
 use utf8;
 use Test::More;
-use Test::Mojo;
 
 require './app.pl';
 
-my $t = Test::Mojo->new;
+my $html = render_home();
 
-$t->get_ok('/')
-    ->status_is(200)
-    ->text_is('h1' => 'Training Perl Home')
-    ->content_like(qr/Perl練習環境のホーム画面/);
+like $html, qr/<title>Training Perl Home<\/title>/, 'renders page title';
+like $html, qr/<h1>Training Perl Home<\/h1>/, 'renders heading';
+like $html, qr/Perl練習環境のホーム画面/, 'renders subheading';
+like $html, qr/Plain Perl/, 'does not depend on a web framework';
 
 done_testing;

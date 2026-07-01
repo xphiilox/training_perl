@@ -3,17 +3,27 @@ use strict;
 use warnings;
 use utf8;
 use feature qw(say);
+use Encode ();
+use IO::Socket::INET;
 
-use Mojolicious::Lite -signatures;
+sub html_escape {
+    my ($value) = @_;
 
-app->config(hypnotoad => {listen => ['http://*:3000']});
+    $value =~ s/&/&amp;/g;
+    $value =~ s/</&lt;/g;
+    $value =~ s/>/&gt;/g;
+    $value =~ s/"/&quot;/g;
+    $value =~ s/'/&#39;/g;
 
-get '/' => sub ($c) {
+    return $value;
+}
+
+sub render_home {
     my @stats = (
         {label => 'Scripts', value => '3', note => 'Ready to run'},
         {label => 'Tests', value => '2', note => 'Passing target'},
         {label => 'Examples', value => '4', note => 'Perl basics'},
-        {label => 'Web App', value => '1', note => 'Mojolicious'},
+        {label => 'Web App', value => '1', note => 'Plain Perl'},
     );
 
     my @tasks = (
@@ -22,19 +32,28 @@ get '/' => sub ($c) {
         {name => 'Webページを育てる', state => '次にやる', time => 'Step 3'},
     );
 
-    $c->render(
-        template => 'index',
-        stats    => \@stats,
-        tasks    => \@tasks,
-    );
-};
+    my $stat_cards = join "\n", map {
+        sprintf <<'HTML', map { html_escape($_) } @$_{qw(label value note)};
+        <article class="card">
+          <div class="label">%s</div>
+          <div class="value">%s</div>
+          <div class="note">%s</div>
+        </article>
+HTML
+    } @stats;
 
-app->start unless caller;
-app;
+    my $task_rows = join "\n", map {
+        my $class = $_->{state} eq '完了' ? 'ok' : $_->{state} eq '次にやる' ? 'warn' : '';
+        sprintf <<'HTML', html_escape($_->{name}), html_escape($class), html_escape($_->{state}), html_escape($_->{time});
+            <tr>
+              <td>%s</td>
+              <td><span class="badge %s">%s</span></td>
+              <td>%s</td>
+            </tr>
+HTML
+    } @tasks;
 
-__DATA__
-
-@@ index.html.ep
+    return <<"HTML";
 <!doctype html>
 <html lang="ja">
 <head>
@@ -192,13 +211,13 @@ __DATA__
       color: #ffffff;
     }
 
-    @media (max-width: 820px) {
+    \@media (max-width: 820px) {
       .grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
 
-    @media (max-width: 520px) {
+    \@media (max-width: 520px) {
       header,
       main {
         padding: 18px;
@@ -218,13 +237,7 @@ __DATA__
 
   <main>
     <section class="grid" aria-label="summary">
-      % for my $stat (@$stats) {
-        <article class="card">
-          <div class="label"><%= $stat->{label} %></div>
-          <div class="value"><%= $stat->{value} %></div>
-          <div class="note"><%= $stat->{note} %></div>
-        </article>
-      % }
+$stat_cards
     </section>
 
     <section class="panel">
@@ -238,14 +251,7 @@ __DATA__
           </tr>
         </thead>
         <tbody>
-          % for my $task (@$tasks) {
-            % my $class = $task->{state} eq '完了' ? 'ok' : $task->{state} eq '次にやる' ? 'warn' : '';
-            <tr>
-              <td><%= $task->{name} %></td>
-              <td><span class="badge <%= $class %>"><%= $task->{state} %></span></td>
-              <td><%= $task->{time} %></td>
-            </tr>
-          % }
+$task_rows
         </tbody>
       </table>
     </section>
@@ -262,3 +268,53 @@ __DATA__
   </main>
 </body>
 </html>
+HTML
+}
+
+sub response {
+    my ($status, $content_type, $body) = @_;
+
+    my $length = length Encode::encode('UTF-8', $body);
+
+    return join "\r\n",
+        "HTTP/1.1 $status",
+        "Content-Type: $content_type; charset=utf-8",
+        "Content-Length: $length",
+        "Connection: close",
+        "",
+        $body;
+}
+
+sub run_server {
+    my ($host, $port) = @_;
+
+    my $server = IO::Socket::INET->new(
+        LocalAddr => $host,
+        LocalPort => $port,
+        Proto     => 'tcp',
+        Listen    => 10,
+        ReuseAddr => 1,
+    ) or die "Cannot start server on $host:$port: $!";
+
+    say "Web application available at http://$host:$port";
+
+    while (my $client = $server->accept) {
+        my $request = <$client> // '';
+        my ($method, $path) = split /\s+/, $request;
+
+        my $line;
+        while (defined($line = <$client>) && $line ne "\r\n") {
+        }
+
+        my $body = $method && $method eq 'GET' && $path && $path eq '/'
+            ? response('200 OK', 'text/html', render_home())
+            : response('404 Not Found', 'text/plain', "Not Found\n");
+
+        print {$client} Encode::encode('UTF-8', $body);
+        close $client;
+    }
+}
+
+run_server('0.0.0.0', 3000) unless caller;
+
+1;
