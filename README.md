@@ -42,3 +42,9 @@ VSCode に Dev Containers 拡張が入っている状態で、このフォルダ
 最初に使うなら `bin/hello.pl` を開いて、`Debug current Perl file` または `Debug hello.pl` でブレークポイントを置いて実行できます。
 
 CPAN モジュールを追加したい場合は `cpanfile` に書いてから、必要に応じて Dockerfile や起動後のコンテナでインストールしてください。
+
+詳しい手順は [GETTING_STARTED.md](GETTING_STARTED.md) を見てください。
+
+![VSCode Perl debugger](docs/images/vscode-perl-debug.png)
+
+Enjoy!
