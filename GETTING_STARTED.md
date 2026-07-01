@@ -23,6 +23,12 @@ docker compose build
 docker compose up -d
 ```
 
+ブラウザでホーム画面を開きます。
+
+```txt
+http://localhost:3000
+```
+
 コンテナに入る場合:
 
 ```sh
@@ -43,6 +49,7 @@ prove -l t
 make build
 make up
 make shell
+make web
 make run
 make test
 ```

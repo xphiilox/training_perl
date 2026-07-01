@@ -2,12 +2,19 @@
 
 DockerコンテナのPerl練習用の環境です。
 デバッガーを使ってステップ実行して入門しましょう。
+Mojolicious を使ったホーム画面も用意しています。
 
 ## 使い方
 
 ```sh
 make build
-make run
+make up
+```
+
+ブラウザで開く:
+
+```txt
+http://localhost:3000
 ```
 
 シェルに入る場合:

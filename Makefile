@@ -1,4 +1,4 @@
-.PHONY: build up shell run test clean
+.PHONY: build up shell run web test clean
 
 build:
 	docker compose build
@@ -11,6 +11,9 @@ shell:
 
 run:
 	docker compose run --rm perl perl bin/hello.pl
+
+web:
+	docker compose up -d
 
 test:
 	docker compose run --rm perl prove -l t
