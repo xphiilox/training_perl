@@ -1,0 +1,31 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug current Perl file",
+      "type": "perl",
+      "request": "launch",
+      "program": "${file}",
+      "cwd": "${workspaceFolder}",
+      "stopOnEntry": true,
+      "reloadModules": true,
+      "inc": [
+        "${workspaceFolder}/lib"
+      ],
+      "args": []
+    },
+    {
+      "name": "Debug hello.pl",
+      "type": "perl",
+      "request": "launch",
+      "program": "${workspaceFolder}/bin/hello.pl",
+      "cwd": "${workspaceFolder}",
+      "stopOnEntry": true,
+      "reloadModules": true,
+      "inc": [
+        "${workspaceFolder}/lib"
+      ],
+      "args": []
+    }
+  ]
+}

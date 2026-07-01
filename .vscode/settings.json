@@ -1,0 +1,16 @@
+{
+  "files.associations": {
+    "*.pl": "perl",
+    "*.pm": "perl",
+    "*.t": "perl"
+  },
+  "[perl]": {
+    "editor.defaultFormatter": "richterger.perl"
+  },
+  "perl.perlCmd": "/usr/local/bin/perl",
+  "perl.perlInc": [
+    "${workspaceFolder}/lib"
+  ],
+  "editor.glyphMargin": true,
+  "debug.allowBreakpointsEverywhere": true
+}

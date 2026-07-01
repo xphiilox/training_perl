@@ -1,0 +1,20 @@
+{
+  "name": "training_perl",
+  "dockerComposeFile": "../compose.yaml",
+  "service": "perl",
+  "workspaceFolder": "/workspace",
+  "shutdownAction": "stopCompose",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "richterger.perl"
+      ],
+      "settings": {
+        "perl.perlCmd": "/usr/local/bin/perl",
+        "perl.perlInc": [
+          "/workspace/lib"
+        ]
+      }
+    }
+  }
+}

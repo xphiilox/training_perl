@@ -1,0 +1,25 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "perl: run hello",
+      "type": "shell",
+      "command": "perl bin/hello.pl",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "perl: test",
+      "type": "shell",
+      "command": "prove -l t",
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "perl: syntax check current file",
+      "type": "shell",
+      "command": "perl -cw ${file}",
+      "problemMatcher": []
+    }
+  ]
+}
