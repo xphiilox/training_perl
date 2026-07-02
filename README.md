@@ -54,6 +54,10 @@ CPAN モジュールを追加したい場合は `cpanfile` に書いてから、
 
 詳しい手順は [GETTING_STARTED.md](GETTING_STARTED.md) を見てください。
 
+補足事項
+Perl拡張機能のデバッガーは、Xdebugのように画面アクセスのタイミングで使えない。Perl の VS Code デバッガは、Xdebug のように「ブラウザで画面アクセス → CGI実行 → 自動でVS Codeに接続 → ブレークポイントで停止」という使い方は、標準状態ではやりにくい。Xdebug は PHP 側に組み込まれる拡張なので可能。実際にボタンを押した瞬間に VS Code デバッガが自動起動して止まる、という動きは今の Perl 拡張ではそのままはできません。Apache が CGI を別プロセスで起動するので、VS Code 側がそのプロセスに attach できないためです。
+
 ![VSCode Perl debugger](docs/images/vscode-perl-debug.png)
+画面を選択してデバッガースタートを押している様子
 
 Enjoy!
