@@ -1,4 +1,4 @@
-FROM perl:5.40-slim
+FROM perl:5.42.2-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 
